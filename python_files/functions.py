@@ -26,9 +26,13 @@ def check_if_target_has_collision(target_x: int, target_y: int, obstacles: Tuple
         tuple(bool, None|Block): if player has any collision or not and obstacle class
     '''
     for obstacle_class in obstacles:
-        for obstacle_x, obstacle_y in obstacle_class.objects_coordinates:
-            if (target_x, target_y) == (obstacle_x, obstacle_y):
+        if isinstance(obstacle_class, classes.Character):
+            if (target_x, target_y) == (obstacle_class.x, obstacle_class.y):
                 return (True, obstacle_class)
+        else:
+            for obstacle_x, obstacle_y in obstacle_class.objects_coordinates:
+                if (target_x, target_y) == (obstacle_x, obstacle_y):
+                    return (True, obstacle_class)
 
     return False, None
 
@@ -45,8 +49,11 @@ def show_obstacles(screen, obstacles: Tuple[classes.Block]) -> None:
         None
     '''
     for obstacle in obstacles:
-        for obstacle_x, obstacle_y in obstacle.objects_coordinates:
-            screen.blit(obstacle.image, (obstacle_x * 50, obstacle_y * 50))
+        if isinstance(obstacle, classes.Character):
+            screen.blit(obstacle.image, (obstacle.x * 50, obstacle.y * 50))
+        else:
+            for obstacle_x, obstacle_y in obstacle.objects_coordinates:
+                screen.blit(obstacle.image, (obstacle_x * 50, obstacle_y * 50))
             
 
 # BLOCKS MOVEMENTS
@@ -151,10 +158,11 @@ def move_player_up(player: classes.Character, all_obstacles: Tuple[classes.Block
     if 0 < player.y:
         has_collision, obstacle = check_if_target_has_collision(player.x, player.y - 1, all_obstacles)
         if has_collision:
-            if obstacle.is_movable:
-                if move_block_up(player.x, player.y - 1, obstacle, all_obstacles):
-                    player.move_character(player.x, player.y, up=True)
-                    return True
+            if not isinstance(obstacle, classes.Character):
+                if obstacle.is_movable:
+                    if move_block_up(player.x, player.y - 1, obstacle, all_obstacles):
+                        player.move_character(player.x, player.y, up=True)
+                        return True
         else:
             player.move_character(player.x, player.y, up=True)
             return True
@@ -175,10 +183,11 @@ def move_player_right(player: classes.Character, all_obstacles: Tuple[classes.Bl
     if player.x < constants.WINDOW_WIDTH // 50 - 1:
         has_collision, obstacle = check_if_target_has_collision(player.x + 1, player.y, all_obstacles)
         if has_collision:
-            if obstacle.is_movable:
-                if move_block_right(player.x + 1, player.y, obstacle, all_obstacles):
-                    player.move_character(player.x, player.y, right=True)
-                    return True
+            if not isinstance(obstacle, classes.Character):
+                if obstacle.is_movable:
+                    if move_block_right(player.x + 1, player.y, obstacle, all_obstacles):
+                        player.move_character(player.x, player.y, right=True)
+                        return True
         else:
             player.move_character(player.x, player.y, right=True)
             return True
@@ -199,10 +208,11 @@ def move_player_down(player: classes.Character, all_obstacles: Tuple[classes.Blo
     if player.y < constants.WINDOW_HEIGHT // 50 - 1:
         has_collision, obstacle = check_if_target_has_collision(player.x, player.y + 1, all_obstacles)
         if has_collision:
-            if obstacle.is_movable:
-                if move_block_down(player.x, player.y + 1, obstacle, all_obstacles):
-                    player.move_character(player.x, player.y, down=True)
-                    return True
+            if not isinstance(obstacle, classes.Character):
+                if obstacle.is_movable:
+                    if move_block_down(player.x, player.y + 1, obstacle, all_obstacles):
+                        player.move_character(player.x, player.y, down=True)
+                        return True
         else:
             player.move_character(player.x, player.y, down=True)
             return True
@@ -223,10 +233,11 @@ def move_player_left(player: classes.Character, all_obstacles: Tuple[classes.Blo
     if 0 < player.x:
         has_collision, obstacle = check_if_target_has_collision(player.x - 1, player.y, all_obstacles)
         if has_collision:
-            if obstacle.is_movable:
-                if move_block_left(player.x - 1, player.y, obstacle, all_obstacles):
-                    player.move_character(player.x, player.y, left=True)
-                    return True
+            if not isinstance(obstacle, classes.Character):
+                if obstacle.is_movable:
+                    if move_block_left(player.x - 1, player.y, obstacle, all_obstacles):
+                        player.move_character(player.x, player.y, left=True)
+                        return True
         else:
             player.move_character(player.x, player.y, left=True)
             return True

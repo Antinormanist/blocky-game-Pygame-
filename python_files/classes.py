@@ -13,6 +13,21 @@ class Character:
         self.y = y
 
 
+    def set_coordinates(self, x: int, y: int) -> None:
+        '''
+        Sets new coordinates of a character
+
+        Args:
+            x (int): x coordinate
+            y (int): y coordinate
+
+        Returns:
+            None
+        '''
+        self.x = x
+        self.y = y
+
+
     def move_character(self, current_x: int, current_y: int, up: bool = False, right: bool = False, down: bool = False, left: bool = False) -> None:
         '''
         Moves character to new coordinates
@@ -79,11 +94,21 @@ class Player(Character):
         super().__init__(image, health_points, x, y)
 
 
+class Archer(Character):
+    def __init__(self, image: str, health_points: int, x: int, y: int, player_actions_before_shot: int) -> None:
+        super().__init__(image, health_points, x, y)
+        self.player_actions_before_shot = player_actions_before_shot
+
+
+    def shoot(self, player: Player) -> None:
+        pass
+
+
 class Rock(Block):
-    def __init__(self, block_type: str, is_movable: bool, image: str, objects_coordinates: Tuple[int, int]) -> None:
+    def __init__(self, block_type: str, is_movable: bool, image: str, objects_coordinates: Set[Tuple[int, int]]) -> None:
         super().__init__(block_type, is_movable, image, objects_coordinates)
 
 
 class Box(Block):
-    def __init__(self, block_type: str, is_movable: bool, image: str, objects_coordinates: Tuple[int, int]) -> None:
+    def __init__(self, block_type: str, is_movable: bool, image: str, objects_coordinates: Set[Tuple[int, int]]) -> None:
         super().__init__(block_type, is_movable, image, objects_coordinates)

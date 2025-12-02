@@ -15,35 +15,77 @@ def main():
     width = constants.WINDOW_WIDTH
     height = constants.WINDOW_HEIGHT
     screen = pygame.display.set_mode((width, height))
-
-    box_coordinates = {(4, 0), (6, 8)}
-    rock_coordinates = {(2, 2), (4, 6), (7, 9)}
+    settings = constants.SETTINGS
 
     player = classes.Player(constants.PLAYER_IMAGE, 100, 0, 0)
-    boxes = classes.Box('box', True, constants.BOX_IMAGE, box_coordinates)
-    rocks = classes.Rock('rock', False, constants.ROCK_IMAGE, rock_coordinates)
 
-    all_obstacles = (boxes, rocks)
+    current_region = 1
+    current_zone = 1
 
     running = True
     while running:
+        obstacles = constants.ZONES_OBSTACLES[current_zone]
+
+        # screen blits
+
         screen.fill(constants.BACKGROUND_RGB)
         screen.blit(player.image, (player.x * 50, player.y * 50))
         
-        functions.show_obstacles(screen, all_obstacles)
+        functions.show_obstacles(screen, obstacles)
+
+        # load settings
+        screen.blit(settings, (constants.WINDOW_WIDTH - 25, 0))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
+                # movements
                 if event.key == pygame.K_w:
-                    functions.move_player_up(player, all_obstacles)
+                    if player.y == 0:
+                        new_region = constants.ZONES_DIRECTIONS[current_zone][0]
+                        if new_region:
+                            # has region
+                            current_zone = new_region
+                            player.set_coordinates(player.x, constants.WINDOW_HEIGHT // 50 - 1)
+                            continue
+                    
+                    functions.move_player_up(player, obstacles)
                 elif event.key == pygame.K_d:
-                    functions.move_player_right(player, all_obstacles)
+                    if player.x == constants.WINDOW_WIDTH // 50 - 1:
+                        new_region = constants.ZONES_DIRECTIONS[current_zone][1]
+                        if new_region:
+                            # has region
+                            current_zone = new_region
+                            player.set_coordinates(0, player.y)
+                            continue
+                    functions.move_player_right(player, obstacles)
                 elif event.key == pygame.K_s:
-                    functions.move_player_down(player, all_obstacles)
+                    if player.y == constants.WINDOW_HEIGHT // 50 - 1:
+                        new_region = constants.ZONES_DIRECTIONS[current_zone][2]
+                        if new_region:
+                            # has region
+                            current_zone = new_region
+                            player.set_coordinates(player.x, 0)
+                            continue
+                    functions.move_player_down(player, obstacles)
                 elif event.key == pygame.K_a:
-                    functions.move_player_left(player, all_obstacles)
+                    if player.x == 0:
+                        new_region = constants.ZONES_DIRECTIONS[current_zone][3]
+                        if new_region:
+                            # has region
+                            current_zone = new_region
+                            player.set_coordinates(constants.WINDOW_WIDTH // 50 - 1, player.y)
+                            continue
+                    functions.move_player_left(player, obstacles)
+                # settings
+                elif event.key == pygame.K_BACKQUOTE:
+                    pass
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = pygame.mouse.get_pos()
+                if constants.WINDOW_WIDTH  - 25 <= x and y <= 25:
+                    # show settings menu
+                    pass
                     
 
         pygame.display.flip()
